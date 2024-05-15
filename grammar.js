@@ -3436,9 +3436,13 @@ const rules = {
     $.delay_control
   ),
 
-  clocking_drive: $ => prec.left(PREC.ASSIGN,
-    seq($.clockvar_expression, '<=', optional($.cycle_delay), $.expression)
-  ),
+  // clocking_drive: $ => prec.left(PREC.ASSIGN,
+  //   seq($.clockvar_expression, '<=', optional($.cycle_delay), $.expression)
+  // ),
+  clocking_drive: $ => prec.left(PREC.ASSIGN, choice(
+    seq($.variable_lvalue, '<=', $.cycle_delay, $.expression),
+    seq($.cycle_delay, $.clockvar_expression, '<=', $.expression)
+  )),
 
   cycle_delay: $ => prec.left(seq('##', choice(
     $.integral_number,
@@ -4083,8 +4087,9 @@ const rules = {
   // A.8.3 Expressions
 
   inc_or_dec_expression: $ => choice(
-    seq($.inc_or_dec_operator, repeat($.attribute_instance), $.variable_lvalue),
-    seq($.variable_lvalue, repeat($.attribute_instance), $.inc_or_dec_operator)
+    seq($.inc_or_dec_operator, repeat($.attribute_instance), $.variable_lvalue)
+    // seq($.inc_or_dec_operator, repeat($.attribute_instance), $.variable_lvalue),
+    // seq($.variable_lvalue, repeat($.attribute_instance), $.inc_or_dec_operator)
   ),
 
   conditional_expression: $ => prec.right(PREC.CONDITIONAL, seq(
@@ -4158,7 +4163,9 @@ const rules = {
   ),
 
   expression: $ => choice(
-    $.primary,
+    
+    prec(PREC.UNARY, $.primary),
+    // $.primary,
 
     prec.left(PREC.UNARY, seq(
       $.unary_operator, repeat($.attribute_instance), $.primary
@@ -4284,7 +4291,7 @@ const rules = {
       optional($.select1)
     ),
     $.empty_unpacked_array_concatenation,
-    seq($.concatenation, optseq('[', $.range_expression, ']')),
+    prec.left(PREC.UNARY,seq($.concatenation, optseq('[', $.range_expression, ']'))),
     seq($.multiple_concatenation, optseq('[', $.range_expression, ']')),
     $.function_subroutine_call,
     $.let_expression,
@@ -4454,6 +4461,7 @@ const rules = {
   ),
 
   inc_or_dec_operator: $ => choice('++', '--'),
+  //inc_or_dec_operator: $ => choice('++', '--'),
 
   // unary_module_path_operator = '~&' /
   //   '~|' /
@@ -4870,7 +4878,7 @@ module.exports = grammar({
     [$.module_path_primary, $.tf_call],
     [$._package_item, $.package_declaration],
     [$.concurrent_assertion_item, $.deferred_immediate_assertion_item, $.generate_block_identifier],
-    [$.clockvar, $.variable_lvalue],
+    //[$.clockvar, $.variable_lvalue],
     [$._seq_input_list, $.combinational_entry],
     [$.constant_primary, $.primary],
     [$.let_expression, $.primary],
@@ -4990,5 +4998,11 @@ module.exports = grammar({
     [$.event_expression, $.expression_or_dist, $.let_actual_arg],
     [$.module_path_primary, $.primary],
     [$.module_path_primary, $.primary_literal],
+    [$.primary, $.constant_primary,$.tf_call,$.sequence_instance,$.data_type,$.generate_block_identifier],
+    [$.port_reference,$.primary, $.constant_primary,$.tf_call,$.sequence_instance,$.generate_block_identifier],
+    [$.sequence_instance, $.let_expression, $.tf_call, $.primary, $.net_lvalue, $.generate_block_identifier, $._sequence_identifier],
+    [$.port_reference, $.let_expression, $.tf_call, $.constant_primary, $.primary],
+    [$.tf_call, $.primary],
+    [$.tf_call, $.primary, $.net_lvalue]
   ],
 });
