@@ -10,6 +10,8 @@ package mypkg;
 `define D(x, y) initial $display("start", x, y)
 `define DELAY #1
 `define WIDTH 32
+  
+endpackage
 
 
 module add_sub (x, y, z, sign);
