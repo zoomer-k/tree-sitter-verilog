@@ -1,7 +1,7 @@
 /*
   zoo module
 */
-package mypkg;
+//package mypkg;
 
 `resetall
 `undefineall
@@ -11,7 +11,7 @@ package mypkg;
 `define DELAY #1
 `define WIDTH 32
   
-endpackage
+//endpackage
 
 
 module add_sub (x, y, z, sign);
