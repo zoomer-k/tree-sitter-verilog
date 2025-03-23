@@ -26,10 +26,13 @@ jobs:
     name: Test parser
     #runs-on: ${{matrix.os}}
     runs-on: ubuntu-latest
-    # strategy:
-    #   fail-fast: false
-    #   matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+          abi_version: [14, 15]
     #     os: [ubuntu-latest, windows-latest, macos-14]
+    env:
+      TREE_SITTER_ABI_VERSION: ${{ matrix.abi_version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -38,13 +41,16 @@ jobs:
       - name: Run tests
         uses: tree-sitter/parser-test-action@v2
         with:
-          generate: true
+          generate: ${{ matrix.abi_version == 15 }}
           test-parser: true
           test-rust: true
           test-node: true
           test-python: true
           test-go: true
           test-swift: true
+      - name: Generate parser
+        if: ${{ matrix.abi_version != 15 }}
+        run: tree-sitter generate --abi=${{ matrix.abi_version }}
       # - name: Parse examples
       #   uses: tree-sitter/parse-action@v4
       #   with:
