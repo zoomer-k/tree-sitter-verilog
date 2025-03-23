@@ -40,17 +40,8 @@ jobs:
         uses: tree-sitter/setup-action/cli@v1
       - name: Install dependencies
         run: npm ci --omit dev --omit peer --omit optional
-      - name: Generate parser 14
-        if: ${{ matrix.abi_version != 15 }}
-        run: |
-          tree-sitter generate --abi=${{ matrix.abi_version }}
-          [[ ! -d node_modules ]] || rm -rf node_modules
       # - name: Verify parser
       #   run: git diff --exit-code -- src/parser.c
-      - name: Generate parser 15
-        uses: tree-sitter/parser-test-action@v2
-        with:
-          generate: ${{ matrix.abi_version == 15 }}
       - name: Test parser
         uses: tree-sitter/parser-test-action@v2
         with:
@@ -66,6 +57,15 @@ jobs:
           test-node: true
           test-go: true
           test-swift: true
+      - name: Generate parser 14
+        if: ${{ matrix.abi_version != 15 }}
+        run: |
+          tree-sitter generate --abi=${{ matrix.abi_version }}
+          [[ ! -d node_modules ]] || rm -rf node_modules
+      - name: Generate parser 15
+        uses: tree-sitter/parser-test-action@v2
+        with:
+          generate: ${{ matrix.abi_version == 15 }}
       # - name: Generate parser
       #   if: ${{ matrix.abi_version != 15 }}
       #   run: tree-sitter generate --abi=${{ matrix.abi_version }}
