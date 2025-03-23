@@ -26,10 +26,10 @@ jobs:
     name: Test parser
     #runs-on: ${{matrix.os}}
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-14]
+    # strategy:
+    #   fail-fast: false
+    #   matrix:
+    #     os: [ubuntu-latest, windows-latest, macos-14]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
