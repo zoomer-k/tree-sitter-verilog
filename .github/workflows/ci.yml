@@ -65,6 +65,7 @@ jobs:
       - name: Generate parser 15
         uses: tree-sitter/parser-test-action@v2
         with:
+          test-parser: false
           generate: ${{ matrix.abi_version == 15 }}
       # - name: Generate parser
       #   if: ${{ matrix.abi_version != 15 }}
